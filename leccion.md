@@ -4,7 +4,7 @@ collection: lessons
 layout: lesson
 slug:
 authors:
-- Jose Hernándex Pérez
+- Jose Hernández Pérez
 editors:
 -
 reviewers:
@@ -21,7 +21,7 @@ review-ticket:
 
 ## Introduccion y Objetivos
 
-En esta leccion estaremos usando el paquete de Python _selenium_ para automatizar nuestro acceso a paginas web y la extraccion de datos. Aqui aprende
+En esta leccion estaremos usando el paquete de Python _selenium_ para automatizar nuestro acceso a paginas web y la extraccion de datos. La
 
 - Aprender que es Selenium y utlizar su function de Webdriver en Python
 - Interactuar con una pagina web de una manera automatizada
