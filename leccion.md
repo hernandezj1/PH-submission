@@ -27,6 +27,8 @@ En esta leccion estaremos usando el paquete de Python _selenium_ para automatiza
 - Interactuar con una pagina web de una manera automatizada
 - Exportar los datos adquiridos para futuro uso en su analisis
 
+Para llevar acabo nuestro analisis estaremos analizando la pagina <a href="https://lp.espacenet.com/">Latipat</a> la cual es una coleccion de patentes a traves de los paises iberoamericanos. 
+
 ## Pre-requisitos
 
 
