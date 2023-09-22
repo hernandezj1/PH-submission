@@ -411,9 +411,12 @@ for i in range(1,16):
         writer= csv.writer(f)
         writer.writerow(data)
 
-```
+driver.close()
 
-Al final este programa debe producir un documento csv con los primeros 8 titulos y abstractos de las patentes. Se producen solamente 8 aunque se pasa por el loop 16 veces porque la pagina web tiene u error de doble clic e el cursor de siguiente y repite las entradas dos veces. Esta repeticion se puede limpiar despues con herrmeintos como Excel o OpenRefine o utilizando Python mas complicado como un if statement para comparar las entradas y borrar las repetidas.
+```
+La ultima linea del programa cierra el driver para no dear el browser automatico corriendo. 
+
+Al final de este programa debe producir un documento csv con los primeros 8 titulos y abstractos de las patentes. Se producen solamente 8 aunque se pasa por el loop 16 veces porque la pagina web tiene u error de doble clic e el cursor de siguiente y repite las entradas dos veces. Esta repeticion se puede limpiar despues con herrmeintos como Excel o OpenRefine o utilizando Python mas complicado como un if statement para comparar las entradas y borrar las repetidas.
 
 El CSV abre como un documento normal en microsoft Excel, Libreoffice o en editores de texto.
 
