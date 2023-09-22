@@ -27,7 +27,7 @@ En esta leccion aprenderemos a implementar el paquete de Python _selenium_ para 
 - Interactuar con una pagina web de una manera automatizada
 - Exportar los datos adquiridos para futuro uso en su analisis en formato CSV (Comma separated values - formato 'default' de Microsoft Excel)
 
-Para llevar acabo nuestro analisis estaremos analizando la pagina <a href="https://lp.espacenet.com/">Latipat</a> la cual es una coleccion de patentes a traves de los paises iberoamericanos. En esta pagina someteremos una busqueda para patentes que tengan que ver con la industria agricola y vamos a extraer las categorias de uso ( quimicos, inventos mecanicos, etc.) de las primeras 10 patentes de la busqueda a un documento CSV para futuro uso.
+Para llevar acabo nuestro analisis estaremos analizando la pagina <a href="https://lp.espacenet.com/?locale=es_LP">Latipat</a> la cual es una coleccion de patentes a traves de los paises iberoamericanos. En esta pagina someteremos una busqueda para patentes que tengan que ver con la industria agricola y vamos a extraer los titulos y resumen (abstract) de las primeras 10 patentes de la busqueda a un documento CSV para futuro uso.
 
 ## Pre-requisitos
 
@@ -109,7 +109,7 @@ Firefox:
 driver = webdriver.Firefox()
 ```
 
-Pero se __recomienda fuertemente__ que se ponga el camino completo de donde se encuentra el documento. Por ejemplo: 
+Pero se __recomienda fuertemente__ que se detalle el camino completo de donde se encuentra el documento. Por ejemplo: 
 
 Chrome:
 ```
@@ -147,15 +147,15 @@ driver = webdriver.Chrome('/Users/joseh/Downloads/chromedriverfolder/chromedrive
 
 Reiteramos que nuestro ejemplo solamente utilizara Chrome pero facilmente puede hacer lo mismo con los demas browsers.
 
-Ahora anadimos la linea que direcciona al driver a abrir una pagina especifica en este caso __Latipat__ que usa el URL https://lp.espacenet.com/
+Ahora anadimos la linea que direcciona al driver a abrir una pagina especifica en este caso __Latipat__ que usa el URL https://lp.espacenet.com/?locale=es_LP
 
 ```
-driver.get('https://lp.espacenet.com')
+driver.get('https://lp.espacenet.com/?locale=es_LP')
 ```
 
 Una vez se corra este codigo el driver abre la pagina web automaticamente, pero todavia no tiene instrucciones de como interactuar con ella.
 
-Aqui se debe notar tambien que la notacion _'driver.'_ permite accesar todos los metodos que tiene el drver de selnium desde interactuar con elementso especifico de la pagina hasta cerrar nuestro buscador. Por esta razon todas las instrucciones que siguen, excepto las de procesamiento de data despues de recopilar la informacion usando _'driver.'_ antes.
+Aqui se debe notar tambien que la notacion _'driver.'_ permite accesar todos los metodos que tiene el driver de selenium; desde interactuar con elementos especificos de la pagina hasta cerrar nuestro buscador. Por esta razon todas las instrucciones que siguen, excepto las de procesamiento de data, usan _'driver.'_ antes.
 
 ## Navegacion en la Pagina web
 
@@ -170,7 +170,11 @@ Para llegar a someter la palabra al buscador primero lo tenemos que encontrar y 
 Si usa su click derecho encima del elemento de interes en este caso el buscador le debe salir la opcion de 'Inspect' o inspeccionar. Si le da click a esta opcion le va a salir un panel usualment en su mano derecha del codigo HTMl de la pagina en cuestion. este proceso suele variar dependiendo de su browser pero esta estandarizado en los broswer prominentes como Chrome, Firefox, y Edge.
 
 
-![alt imagen de inspect y el panel](imagenes/inspect.png)
+![alt imagen de inspect](imagenes/inspect.png)
+
+Panel de inspeccion:
+
+![alt imagen de panel](imagenes/panel.png)
 
 Aqui usted puede notar que cada elemetno en HTML suele tener unos atributos que nos permiten identificar y distinguir distintos elementos facilmente. Por ejemplo alugnos usan 'id' y otros usan, como en este caso, 'name'. Por lo tanto sabemos que el buscador es el unico elemento con el nombre query lo cual lo hace facil de buscar con la siguiente linea: 
 
@@ -178,9 +182,9 @@ Aqui usted puede notar que cada elemetno en HTML suele tener unos atributos que 
 search_box = driver.find_element(By.NAME,'query')
 ```
 
-En esta linea definimos una variable llamada search_box la cual le dice al driver que busque el elemento ( find_element) con el nombre 'query (By.NAME, 'query').
+En esta linea definimos una variable llamada search_box la cual le dice al driver que busque el elemento (__find_element__) con el nombre 'query (__By.NAME, 'query'__).
 
-es importante notar que esta no es la unica manera de encontrar un elemento. por ejemplo el mismo elemento de la caja del search se puede buscar por su caminon de XPATH o su cmaino largo a traves de la estructura de HTML con la siguuiente linea:
+Es importante notar que esta no es la unica manera de encontrar un elemento. Por ejemplo el mismo elemento de la caja del search se puede buscar por su camino de XPATH o su camino largo a traves de la estructura de HTML con la siguiente linea:
 
 ```
 search_box= driver.find_element(By.XPATH,'/html/body/div/div[6]/div/div/form/div[1]/span[3]/textarea')
@@ -198,7 +202,7 @@ search_box= driver.find_element(By.XPATH, xpath1)
 
 #### Interactuando con el elemento 
 
-ya que encontramos la caja de busqueda ahora la podemos utilizar usando las siguientes lineas: 
+Ya que encontramos la caja de busqueda ahora la podemos utilizar usando las siguientes lineas: 
 
 ```
 #Termino para la busqueda
@@ -227,7 +231,7 @@ import csv
 
 driver = webdriver.Chrome('/Users/joseh/Downloads/chromedriverfolder/chromedriver')
 
-driver.get('https://lp.espacenet.com')
+driver.get('https://lp.espacenet.com/?locale=es_LP')
 
 search_box = driver.find_element(By.NAME,'query')
 
@@ -240,35 +244,78 @@ search_box.send_keys(Keys.RETURN)
 
 Y en vez de la pagina principal de latipat debe estar viendo esta: (sus resultados pueden ser distintos dependiendo de la fecha en la que corra esta programa)
 
-![alt imagen de resultados de busqueda agricultura](http://)
+![alt imagen de resultados de busqueda agricultura](imagenes/resultado.png)
 
 #### Integrando loops con busqueda de elementos
 
-Las instrucciones anteriores funcionan perfectamente si tenemos un solo elemento de interes como la barra de busqueda. pero depues de haber buscado los elementos ahora queremos extraer informacion que se repite a traves en multiples instancias.
+Las instrucciones anteriores funcionan perfectamente si tenemos un solo elemento de interes como la barra de busqueda. Pero depues de haber buscado los elementos ahora queremos extraer informacion que se repite a traves en multiples instancias.
 
-En este caso queremos informacion que solo aparece dentro de un popup de informacion, lo que significa que tenemos dos pasos: 
+En este caso queremos informacion que solo aparece una vez le damos click a la informacion completa de la patente. por lo tanto tenemos que hacer el siguiente proceso en tres pasos: 
 
- - Paso 1: Apretar el boton que abre el popup; extraer y copiar la informacion deseada
+ - Paso 1: Accesar la primera patente
 
- - Paso 2: Cerrar el Popup y abrir el siguiente 
+ - Paso 2: Copiar la informacion al CSV
 
-Ahora identificaremos el elemento que queremos extraer de cada popup:
-
-
-![alt imagen de popup y su popup html](http://)
+ - Paso 3: Movernos a la siguiente patente y repetir el paso 2
 
 
-Ahora que sabemos que elemento queremos tenemos que ver como se diferencia delm mismo elemento pero en el popup siguiente y vemmos que cada n=boton para abrir el popup cambia el segundo numero
-por ejemplo el primer popup tiene el codigo el XPATH 
+##### Accesando la primera patente
 
-"//*[@id='contentRow_7']/td[5]/div/a[1]"
 
-y el sgundo tiene el codigo
 
-"//*[@id='contentRow_8']/td[5]/div/a[1]"
 
-Ahora podemos crear un loop que accese los primeros 10 cambiando el numero del contentRow
-para hacer esto usamos una variale en Python en este cas 'i' y despues de abrir cada popup a esta variable le sumamos 1. 
+
+
+
+##### Copiando la informacion al CSV
+
+Ahora identificaremos los elementos que queremos extraer de cada pagina de la patente (_el titulo y el resumen_)
+
+
+![alt imagen de asbtract y titulo](imagenes/resumen.png)
+
+
+Ahora que sabemos los elementos que queremos tenemos que identificar sus XPATH utilizando el panel de la derecha
+
+![alt imagen panel para resumen](imagenes/panelresumen.png)
+
+Los caminos se pueden identificar de la siguiente manera: 
+
+```
+    xpathabs='//*[@id="body"]/div[2]/p[1]'
+    xpathtitulo='//*[@id="pagebody"]/h3'
+```
+
+y para extraer su texto vamos a utilizar el metodo de __get_attribute__
+
+```
+    titulo= driver.find_element(By.XPATH,xpathtitulo).get_attribute('innerText')
+    abstracto=driver.find_element(By.XPATH,xpathabs).get_attribute('innerText')
+```
+
+Despues de tener su texto extraido podemos usar las funciones de la biblioteca __csv__ para escribir nuestra data al nuevo documento: 
+
+```
+    data=[titulo,abstracto]
+
+    with open('output.csv', 'a', encoding='UTF8', newline='') as document:
+        writer= csv.writer(document)
+        writer.writerow(data)
+
+```
+
+preste atencion que el documento se abrio con el argumento 'a' que significa 'append' o 'anadir'. Si utilza el argumento 'w' en vez cada linea nueva va a borrar la entrada anterior
+
+
+##### Pasando a la siguiente patente
+
+Para darle click al boton vamos a usar otra funcion de Selenium que se llama __WebDriverWait__ esta funcion le dice al driver que espere hasta que algo ocurra. En nuestro caso estamos esperando (un maximo de 10 segundos) hasta que el boton _siguiente_ aparezca y le vamos a dar clcik con el metodo __.click__ en vez de la linea de codigo que usamos antes. Esta linea se ve de la siguiente manera para nuestro boton de _siguiente_: 
+
+```
+WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.ID,'nextDocumentLink'))).click()
+```
+
+##### Loop final
 
 ```
 for i in range(7,15):
