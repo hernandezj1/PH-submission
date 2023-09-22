@@ -261,11 +261,24 @@ En este caso queremos informacion que solo aparece una vez le damos click a la i
 
 ##### Accesando la primera patente
 
+Para accesar la primer patente tenemos que verificar su XPATH o camino y asignarle una variable. Esto lo va a hacer con el mismo panel que utilizamos para encontrar el identificador para la barra de busqueda, pero ahora copiara el XPATH del elemento directament
 
+![alt imagen de Copy XPATh primera patente](imagenes/primerapatente.png)
 
+para realizar esta busqueda asignamos este XPATH a una variable y despues buscamos el elemento con el driver. Finalment le damos click al link de la patente para entrar a a proxima pagina, la cual puede ver en la imagen que sigue.
 
+```
+xpath1='//*[@id="publicationId1"]'
+publicacion1= driver.find_element(By.XPATH,xpath1)
+driver.execute_script("arguments[0].click();", publicacion1)
+driver.implicitly_wait(10)
+```
 
+Como puede ver aqui tenemos dos metodos nuevos:
+ - El primero es __.execute_script()__ el cual le dice al driver que le de click al buton apropriado
+ - El segundo es __.implictly_wait()__ el cual le dice al driver que espere 1000 milisegundo o 1 segundo en lo que sube el popup. este metodo se usa para websites lentos o para aasegurarse ue los elementos esten presentes en la pagina antes de extraer cualquier infromacion.
 
+Con este metodo le damos click a el elemento (__piblicacion1__) con el XPATh apropriado ( __xpath1__)
 
 ##### Copiando la informacion al CSV
 
@@ -275,14 +288,14 @@ Ahora identificaremos los elementos que queremos extraer de cada pagina de la pa
 ![alt imagen de asbtract y titulo](imagenes/resumen.png)
 
 
-Ahora que sabemos los elementos que queremos tenemos que identificar sus XPATH utilizando el panel de la derecha
+Al identificar los elementos que queremos, tenemos que copiar sus XPATH en la misma manera que lo hicimos para el boton de la primera patente.
 
 ![alt imagen panel para resumen](imagenes/panelresumen.png)
 
 Los caminos se pueden identificar de la siguiente manera: 
 
 ```
-    xpathabs='//*[@id="body"]/div[2]/p[1]'
+    xpathres='//*[@id="body"]/div[2]/p[1]'
     xpathtitulo='//*[@id="pagebody"]/h3'
 ```
 
@@ -290,13 +303,13 @@ y para extraer su texto vamos a utilizar el metodo de __get_attribute__
 
 ```
     titulo= driver.find_element(By.XPATH,xpathtitulo).get_attribute('innerText')
-    abstracto=driver.find_element(By.XPATH,xpathabs).get_attribute('innerText')
+    resumen=driver.find_element(By.XPATH,xpathres).get_attribute('innerText')
 ```
 
 Despues de tener su texto extraido podemos usar las funciones de la biblioteca __csv__ para escribir nuestra data al nuevo documento: 
 
 ```
-    data=[titulo,abstracto]
+    data=[titulo,resumen]
 
     with open('output.csv', 'a', encoding='UTF8', newline='') as document:
         writer= csv.writer(document)
@@ -317,24 +330,95 @@ WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.ID,'nextDocumentLi
 
 ##### Loop final
 
+Uniendo el acceso a la primera patente ( que nada mas se ejecutaruna vez), la extraccion de datos y la transferencia a la proxima patente podemos ahora unirlo todo en un for loop en Python. Este loop nos permitira repetir las acciones la cantidad de veces que queramos para anadir todos los datos extraidos en un solo documento.
+
 ```
-for i in range(7,15):
-    xpath1= "//*[@id='contentRow_"+str(i)+"']/td[5]/div/a[1]"
-    IPC= driver.find_element(By.XPATH,xpath1)
-    driver.execute_script("arguments[0].click();", IPC)
-    driver.implicitly_wait(1000)
+xpath1='//*[@id="publicationId1"]'
+publicacion1= driver.find_element(By.XPATH,xpath1)
+driver.execute_script("arguments[0].click();", publicacion1)
+driver.implicitly_wait(10)
+
+for i in range(1,16):
+
+    xpathres='//*[@id="body"]/div[2]/p[1]'
+    xpathtitulo='//*[@id="pagebody"]/h3'
+    titulo= driver.find_element(By.XPATH,xpathtitulo).get_attribute('innerText')
+    resumen=driver.find_element(By.XPATH,xpathres).get_attribute('innerText')
+   
+    data=[titulo,resumen]
+
+    WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.ID,'nextDocumentLink'))).click()
+
+    with open('output.csv', 'a', encoding='UTF8', newline='') as f:
+        writer= csv.writer(f)
+        writer.writerow(data)
+
 ```
 
-Si usted no sabe como funciona el metodo __str__ en Python o el metodo __for__  pro favor lea las siguientes paginas web antes de seguir. 
-
-Si entendio como funciona el loop los unicos metodos nuevos son dos. 
- - El primero es __.execute_script()__ el cual le dice al driver que le de click al buton del popup
- - El segundo es __.implictly_wait()__ el cual le dice al driver que espere 1000 milisegundo o 1 segundo en lo que sube el popup. este metodo se usa para websites lentos o para aasegurarse ue los elementos esten presentes en la pagina antes de extraer cualquier infromacion.
-
-Ahora que sabemos abrir cada popup bvamoms a extraer sus datos a nuestro CSV para analsis en una futura ocasion.
+Si usted no sabe como funciona el loop __for__  en Python por favor lea esta <a href="https://www.freecodecamp.org/espanol/news/bucle-for-en-python-ejemplo-de-for-i-en-range/">pagina web</a>
 
 
-## Exportacion de datos
+## Codigo final 
+
+Ya hemos cubierto todos los elementos por indivudal asi que nuestro codigo final se veria de la siguiente manera:
+
+```
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait 
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+import csv
+
+
+#Iniciacion del driver- por favor recuerde incluir el nombre del programa final y no solamente el ultimo folder!
+
+driver = webdriver.Chrome('/Users/joseh/Downloads/chromedriverfolder/chromedriver')
+
+driver.get('https://lp.espacenet.com/?locale=es_LP')
+
+search_box = driver.find_element(By.NAME,'query')
+
+#Termino para la busqueda
+search_box.send_keys('agricultura')
+
+#Sometemos busqueda
+search_box.send_keys(Keys.RETURN)
+
+#Anadimos una pausa para que el sistema tenga tiempo a completar la busqueda
+driver.implicitly_wait(10)
+
+xpath1='//*[@id="publicationId1"]'
+publicacion1= driver.find_element(By.XPATH,xpath1)
+driver.execute_script("arguments[0].click();", publicacion1)
+driver.implicitly_wait(10)
+
+for i in range(1,16):
+
+    xpathres='//*[@id="body"]/div[2]/p[1]'
+    xpathtitulo='//*[@id="pagebody"]/h3'
+    titulo= driver.find_element(By.XPATH,xpathtitulo).get_attribute('innerText')
+    resumen=driver.find_element(By.XPATH,xpathres).get_attribute('innerText')
+   
+    data=[titulo,resumen]
+
+    WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.ID,'nextDocumentLink'))).click()
+
+    with open('output.csv', 'a', encoding='UTF8', newline='') as f:
+        writer= csv.writer(f)
+        writer.writerow(data)
+
+```
+
+Al final este programa debe producir un documento csv con los primeros 8 titulos y abstractos de las patentes. Se producen solamente 8 aunque se pasa por el loop 16 veces porque la pagina web tiene u error de doble clic e el cursor de siguiente y repite las entradas dos veces. Esta repeticion se puede limpiar despues con herrmeintos como Excel o OpenRefine o utilizando Python mas complicado como un if statement para comparar las entradas y borrar las repetidas.
+
+El CSV abre como un documento normal en microsoft Excel, Libreoffice o en editores de texto.
+
+
+
 
 
 
