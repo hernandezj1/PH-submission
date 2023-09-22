@@ -1,2 +1,2 @@
 # PH-submission
-Submission para leccion Selenium
+Leccion de Selenium con latipat
