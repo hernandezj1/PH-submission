@@ -170,7 +170,7 @@ Para llegar a someter la palabra al buscador primero lo tenemos que encontrar y 
 Si usa su click derecho encima del elemento de interes en este caso el buscador le debe salir la opcion de 'Inspect' o inspeccionar. Si le da click a esta opcion le va a salir un panel usualment en su mano derecha del codigo HTMl de la pagina en cuestion. este proceso suele variar dependiendo de su browser pero esta estandarizado en los broswer prominentes como Chrome, Firefox, y Edge.
 
 
-![alt imagen de inspect y el panel](http://)
+![alt imagen de inspect y el panel](imagenes/inspect.png)
 
 Aqui usted puede notar que cada elemetno en HTML suele tener unos atributos que nos permiten identificar y distinguir distintos elementos facilmente. Por ejemplo alugnos usan 'id' y otros usan, como en este caso, 'name'. Por lo tanto sabemos que el buscador es el unico elemento con el nombre query lo cual lo hace facil de buscar con la siguiente linea: 
 
